@@ -11,6 +11,17 @@ import { Link } from "react-router-dom";
 export default function Assignments() {
   const { cid } = useParams();
   const assignments = db.assignments.filter((obj) => obj.course === cid);
+
+  const formatTime = (date: string) => {
+    let time = "";
+    time = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    time = time + " at ";
+    time = time + ((new Date(date).getHours() % 12) || 12) + ":";
+    time = time + new Date(date).getMinutes().toString().padStart(2, '0');
+    time = time + (new Date(date).getHours() >= 12 ? 'pm' : 'am');
+    return time;
+  };
+
   return (
     <div id="wd-assignments">
       <AssignmentHeader/>
@@ -37,11 +48,9 @@ export default function Assignments() {
                   <h6>
                     <span style={{color: "red"}}>Multiple Modules</span> | 
                     <strong> Not available until </strong> 
-                    {assignment.releaseDate}
-                    {new Date(assignment.releaseDate).toLocaleDateString()} at 12:00am|
+                      { formatTime(assignment.releaseDate) } |
                     <strong> Due </strong>
-                    {new Date(assignment.dueDate).toLocaleDateString()} at 11:59pm| {assignment.points}
-                    May 13 at 11:59pm | 100pts
+                    { formatTime(assignment.dueDate) } | {assignment.points}pts
                   </h6>
                 </div>
                 <LessonControlButtons />
