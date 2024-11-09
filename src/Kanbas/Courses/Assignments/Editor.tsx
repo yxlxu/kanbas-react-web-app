@@ -1,33 +1,82 @@
-import { useParams } from "react-router";
-import * as db from "../../Database";
+import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addAssignment, updateAssignment } from "./reducer";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams();
-  let assignmentIndex = db.assignments.findIndex((a) => (a._id === aid));
-  let assignment = db.assignments[assignmentIndex];
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
+
+  // Local state for form fields
+  const [assignment, setAssignment] = useState({
+    title: "",
+    description: "",
+    course: cid || "",
+    points: 0,
+    releaseDate: new Date().toISOString(),
+    dueDate: new Date().toISOString(),
+    availableUntilDate: new Date().toISOString(),
+  });
+
+  useEffect(() => {
+    if (aid !== "Editor") {
+      // Edit mode: Load existing assignment data
+      const existingAssignment = assignments.find((a: any) => a._id === aid);
+      if (existingAssignment) {
+        setAssignment(existingAssignment);
+      }
+    }
+  }, [aid, assignments]);
+
+  // Handle form input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setAssignment({ ...assignment, [name]: value });
+  };
+
+  // Save the assignment (add or update)
+  const handleSave = () => {
+    if (aid !== "Editor") {
+      dispatch(updateAssignment(assignment));
+    } else {
+      dispatch(addAssignment(assignment));
+    }
+    console.log([...assignments, assignment])
+    navigate(`/Kanbas/Courses/${cid}/Assignments`);
+  };
+
+  // Cancel and navigate back
+  const handleCancel = () => {
+    navigate(`/Kanbas/Courses/${cid}/Assignments`);
+  };
+  
   return (
     <div id="wd-assignments-editor">
       <label htmlFor="wd-name" className="mb-2">Assignment Name</label>
       <div className="col-sm-7">
-        <input id="wd-name" value={assignment.title} className="form-control" />
+        <input 
+          name="title"
+          id="wd-name" 
+          value={assignment.title} 
+          className="form-control" 
+          onChange={handleChange} 
+        />
       </div>
       <br />
       <div className="col-sm-7">
         <textarea
+          name="description"
           cols={40}
           rows={10}
           id="wd-description"
           className="form-control"
-        >
-          The assignment is available online Submit a link to the landing page
-          of The assignment is available online Submit a link to the landing
-          page of The assignment is available online Submit a link to the
-          landing page of The assignment is available online Submit a link to
-          the landing page of The assignment is available online Submit a link
-          to the landing page of The assignment is available online Submit a
-          link to the landing page of
-        </textarea>
+          value={assignment.description}
+          onChange={handleChange}
+        ></textarea>
       </div>
       <br />
 
@@ -36,11 +85,17 @@ export default function AssignmentEditor() {
           Points
         </label>
         <div className="col-sm-5">
-          <input id="wd-points" value={assignment.points} className="form-control" />
+          <input 
+            name="points"
+            id="wd-points" 
+            value={assignment.points} 
+            className="form-control" 
+            onChange={handleChange}
+          />
         </div>
       </div>
 
-      <div className="mb-3 form-inline row">
+      {/* <div className="mb-3 form-inline row">
         <label htmlFor="wd-ag" className="col-sm-2 col-form-label text-end">
           Assignment Group
         </label>
@@ -52,9 +107,9 @@ export default function AssignmentEditor() {
             <option value="EXAM">EXAM</option>
           </select>
         </div>
-      </div>
+      </div> */}
 
-      <div className="mb-3 form-inline row">
+      {/* <div className="mb-3 form-inline row">
         <label htmlFor="wd-grade" className="col-sm-2 col-form-label text-end">
           Display Grade as
         </label>
@@ -66,9 +121,9 @@ export default function AssignmentEditor() {
             <option value="LETTER">Letter</option>
           </select>
         </div>
-      </div>
+      </div> */}
 
-      <div className="mb-3 row">
+      {/* <div className="mb-3 row">
         <label
           htmlFor="wd-subtype"
           className="col-sm-2 col-form-label text-end"
@@ -145,7 +200,7 @@ export default function AssignmentEditor() {
             <br />
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="mb-3 form-inline row">
         <label htmlFor="wd-assign" className="col-sm-2 col-form-label text-end">
@@ -153,38 +208,44 @@ export default function AssignmentEditor() {
         </label>
         <div className="col-sm-5">
           <div className="form-control">
-            <div>
+            {/* <div>
               <label htmlFor="wd-assign"><strong>Assign to</strong></label>
             </div>
             <input id="wd-assign" value="Everyone" className="form-control" />
-            <br />
+            <br /> */}
             <div>
               <label htmlFor="wd-due"><strong>Due</strong></label>
             </div>
             <input
+              name="dueDate"
               type="date"
               id="wd-due"
-              value={new Date(assignment.dueDate).toISOString().split('T')[0]}
+              value={new Date(assignment.dueDate).toISOString().split("T")[0]}
               className="form-control"
+              onChange={handleChange}
             />
             <br />
             <div className="row">
               <div className="col-sm-6">
                 <label htmlFor="wd-afrom"><strong>Available from</strong></label>
                 <input
+                  name="releaseDate"
                   type="date"
                   id="wd-afrom"
-                  value={new Date(assignment.releaseDate).toISOString().split('T')[0]}
+                  value={new Date(assignment.releaseDate).toISOString().split("T")[0]}
                   className="form-control"
+                  onChange={handleChange}
                 />
               </div>
               <div className="col-sm-6">
                 <label htmlFor="wd-auntil"><strong>Until</strong></label>
                 <input
+                  name="availableUntilDate"
                   type="date"
                   id="wd-auntil"
-                  value="2024-05-13"
+                  value={new Date(assignment.availableUntilDate).toISOString().split("T")[0]}
                   className="form-control"
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -193,16 +254,20 @@ export default function AssignmentEditor() {
       </div>
       <hr className="mt-5 col-sm-7"/>
       <div className="float-end col-sm-7">
-        <Link to={`/Kanbas/Courses/${cid}/Assignments`}>
-          <button type="button" className="btn btn-secondary">
-            Cancel
-          </button>
-        </Link>{" "}
-        <Link to={`/Kanbas/Courses/${cid}/Assignments`}>
-          <button type="button" className="btn btn-danger">
-            Save
-          </button>
-        </Link>
+        <button 
+          type="button" 
+          className="btn btn-secondary"
+          onClick={handleCancel}
+        >
+          Cancel
+        </button>{" "}
+        <button 
+            type="button" 
+            className="btn btn-danger"
+            onClick={handleSave}
+        >
+          Save
+        </button>
       </div>
     </div>
   );

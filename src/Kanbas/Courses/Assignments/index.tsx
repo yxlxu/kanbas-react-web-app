@@ -1,16 +1,18 @@
-import ModulesControls from "../Modules/ModulesControls";
-import { BsGripVertical } from "react-icons/bs";
-import { BsNewspaper } from "react-icons/bs";
+import React, { useState } from "react";
+import { BsGripVertical, BsTrash, BsNewspaper } from "react-icons/bs";
 import LessonControlButtons from "../Modules/LessonControlButtons";
 import AssignmentHeader from "./AssignmentHeader";
 import AssignmentControlButtons from "./AssignmentControlButtons";
 import { useParams } from "react-router";
-import * as db from "../../Database";
 import { Link } from "react-router-dom";
+import { deleteAssignment } from "./reducer";
+import { useSelector, useDispatch } from "react-redux";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const assignments = db.assignments.filter((obj) => obj.course === cid);
+  const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
+  console.log(assignments);
+  const dispatch = useDispatch();
 
   const formatTime = (date: string) => {
     let time = "";
@@ -25,9 +27,18 @@ export default function Assignments() {
     return time;
   };
 
+  const handleDelete = (assignmentId: string) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this assignment?"
+    );
+    if (confirmDelete) {
+      dispatch(deleteAssignment(assignmentId));
+    }
+  };
+
   return (
     <div id="wd-assignments">
-      <AssignmentHeader />
+      <AssignmentHeader courseId={cid || ""}/>
       <br />
       <br />
       <br />
@@ -43,7 +54,7 @@ export default function Assignments() {
             id="wd-assignment-list"
             className="wd-lessons list-group rounded-0"
           >
-            {assignments.map((assignment) => (
+            {assignments?.map((assignment: any) => (
               <li className="wd-lesson list-group-item p-3 ps-1 d-inline-flex flex-shrink-1">
                 <BsGripVertical className="me-2 fs-4 my-auto" />
                 <BsNewspaper
@@ -67,6 +78,10 @@ export default function Assignments() {
                   </h6>
                 </div>
                 <LessonControlButtons />
+                <BsTrash
+                  className="ms-3 fs-5 my-auto text-danger cursor-pointer"
+                  onClick={() => handleDelete(assignment._id)}
+                />
               </li>
             ))}
           </ul>
