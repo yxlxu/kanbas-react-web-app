@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router";
 import Account from "./Account";
-import Dashboard from "./Dashboard";
+import Dashboard from "./Dashboard/Dashboard";
 import KanbasNavigation from "./Navigation";
 import Courses from "./Courses";
 import "./styles.css";
@@ -11,13 +11,16 @@ import ProtectedRoute from "./Account/ProtectedRoute";
 export default function Kanbas() {
   const [courses, setCourses] = useState<any[]>(db.courses);
   const [course, setCourse] = useState<any>({
-    _id: "0", name: "New Course", number: "New Number",
-    startDate: "2023-09-10", endDate: "2023-12-15",
-    image: "/images/reactjs.jpg", description: "New Description"
+    _id: "0",
+    name: "New Course",
+    number: "New Number",
+    startDate: "2023-09-10",
+    endDate: "2023-12-15",
+    image: "/images/reactjs.jpg",
+    description: "New Description",
   });
   const addNewCourse = () => {
-    const newCourse = { ...course,
-                        _id: new Date().getTime().toString() };
+    const newCourse = { ...course, _id: new Date().getTime().toString() };
     setCourses([...courses, { ...course, ...newCourse }]);
   };
   const deleteCourse = (courseId: string) => {
@@ -37,32 +40,42 @@ export default function Kanbas() {
   return (
     <div id="wd-kanbas">
       <table width="100%">
-        <tr><td valign="top">
-          <KanbasNavigation />
-        </td><td valign="top">
-        <div className="wd-main-content-offset p-3">
-          <Routes>
-            <Route path="/" element={<Navigate to="Dashboard" />} />
-            <Route path="/Account/*" element={<Account />} />
-            <Route path="/Dashboard" element={            
-              <ProtectedRoute>
-                <Dashboard
-                courses={courses}
-                course={course}
-                setCourse={setCourse}
-                addNewCourse={addNewCourse}
-                deleteCourse={deleteCourse}
-                updateCourse={updateCourse}/>
-              </ ProtectedRoute>
-            } />
-            <Route path="/Courses/:cid/*" element={
-              <ProtectedRoute>
-                <Courses courses={courses}/>
-              </ProtectedRoute>
-            } />
-          </Routes>
-        </div>
-          </td></tr>
+        <tr>
+          <td valign="top">
+            <KanbasNavigation />
+          </td>
+          <td valign="top">
+            <div className="wd-main-content-offset p-3">
+              <Routes>
+                <Route path="/" element={<Navigate to="Dashboard" />} />
+                <Route path="/Account/*" element={<Account />} />
+                <Route
+                  path="/Dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard
+                        courses={courses}
+                        course={course}
+                        setCourse={setCourse}
+                        addNewCourse={addNewCourse}
+                        deleteCourse={deleteCourse}
+                        updateCourse={updateCourse}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/Courses/:cid/*"
+                  element={
+                    <ProtectedRoute>
+                      <Courses courses={courses} />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </div>
+          </td>
+        </tr>
       </table>
     </div>
   );

@@ -8,6 +8,8 @@ export default function AssignmentEditor() {
   const { cid, aid } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const isFaculty = currentUser?.role === "FACULTY";
 
   const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
 
@@ -64,6 +66,7 @@ export default function AssignmentEditor() {
           value={assignment.title} 
           className="form-control" 
           onChange={handleChange} 
+          readOnly={!isFaculty}
         />
       </div>
       <br />
@@ -76,6 +79,7 @@ export default function AssignmentEditor() {
           className="form-control"
           value={assignment.description}
           onChange={handleChange}
+          readOnly={!isFaculty}
         ></textarea>
       </div>
       <br />
@@ -91,6 +95,7 @@ export default function AssignmentEditor() {
             value={assignment.points} 
             className="form-control" 
             onChange={handleChange}
+            readOnly={!isFaculty}
           />
         </div>
       </div>
@@ -223,6 +228,7 @@ export default function AssignmentEditor() {
               value={new Date(assignment.dueDate).toISOString().split("T")[0]}
               className="form-control"
               onChange={handleChange}
+              readOnly={!isFaculty}
             />
             <br />
             <div className="row">
@@ -235,6 +241,7 @@ export default function AssignmentEditor() {
                   value={new Date(assignment.releaseDate).toISOString().split("T")[0]}
                   className="form-control"
                   onChange={handleChange}
+                  readOnly={!isFaculty}
                 />
               </div>
               <div className="col-sm-6">
@@ -246,6 +253,7 @@ export default function AssignmentEditor() {
                   value={new Date(assignment.availableUntilDate).toISOString().split("T")[0]}
                   className="form-control"
                   onChange={handleChange}
+                  readOnly={!isFaculty}
                 />
               </div>
             </div>
@@ -253,22 +261,24 @@ export default function AssignmentEditor() {
         </div>
       </div>
       <hr className="mt-5 col-sm-7"/>
-      <div className="float-end col-sm-7">
-        <button 
-          type="button" 
-          className="btn btn-secondary"
-          onClick={handleCancel}
-        >
-          Cancel
-        </button>{" "}
-        <button 
+      {isFaculty &&
+        <div className="float-end col-sm-7">
+          <button 
             type="button" 
-            className="btn btn-danger"
-            onClick={handleSave}
-        >
-          Save
-        </button>
-      </div>
+            className="btn btn-secondary"
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>{" "}
+          <button 
+              type="button" 
+              className="btn btn-danger"
+              onClick={handleSave}
+          >
+            Save
+          </button>
+        </div>
+      }
     </div>
   );
 }

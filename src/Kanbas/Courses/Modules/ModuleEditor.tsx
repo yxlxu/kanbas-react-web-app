@@ -1,3 +1,5 @@
+import { useSelector } from "react-redux";
+
 export default function ModuleEditor({
   dialogTitle,
   moduleName,

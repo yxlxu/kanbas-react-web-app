@@ -13,6 +13,8 @@ export default function Assignments() {
   const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
   console.log(assignments);
   const dispatch = useDispatch();
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const isFaculty = currentUser?.role === "FACULTY";
 
   const formatTime = (date: string) => {
     let time = "";
@@ -48,7 +50,7 @@ export default function Assignments() {
           <div className="wd-title p-3 ps-2 bg-secondary">
             <BsGripVertical className="me-2 fs-3" />
             ASSIGNMENTS
-            <AssignmentControlButtons />
+            {isFaculty && <AssignmentControlButtons />}
           </div>
           <ul
             id="wd-assignment-list"
@@ -77,11 +79,11 @@ export default function Assignments() {
                     {formatTime(assignment.dueDate)} | {assignment.points}pts
                   </h6>
                 </div>
-                <LessonControlButtons />
-                <BsTrash
+                {isFaculty && <LessonControlButtons />}
+                {isFaculty && <BsTrash
                   className="ms-3 fs-5 my-auto text-danger cursor-pointer"
                   onClick={() => handleDelete(assignment._id)}
-                />
+                />}
               </li>
             ))}
           </ul>
