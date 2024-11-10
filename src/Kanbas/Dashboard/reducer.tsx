@@ -14,6 +14,7 @@ const enrollmentSlice = createSlice({
         (e) => e.user === userId && e.course === courseId
       );
       if (index > -1) {
+        console.log("Unenrolling user:", userId, "from course:", courseId);
         // Unenroll: Remove from enrollments
         state.enrollments.splice(index, 1);
       } else {

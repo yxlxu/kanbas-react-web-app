@@ -97,14 +97,14 @@ export default function Dashboard({
           <textarea
             defaultValue={course.description}
             className="form-control"
-            onChange={(e) => setCourse({ ...course, description: e.target.value })}
+            onChange={(e) =>
+              setCourse({ ...course, description: e.target.value })
+            }
           />
           <hr />
         </div>
       )}
-      <h2 id="wd-dashboard-published">
-        Published Courses ({courses.length})
-      </h2>{" "}
+      <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2>{" "}
       <hr />
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
@@ -129,59 +129,68 @@ export default function Dashboard({
                     className="wd-dashboard-course-link text-decoration-none text-dark"
                   >
                     <img src={img} width="100%" height={160} />
-                    <div className="card-body">
-                      <h5 className="wd-dashboard-course-title card-title">
-                        {course.name}{" "}
-                      </h5>
-                      <p
-                        className="wd-dashboard-course-title card-text overflow-y-hidden"
-                        style={{ maxHeight: 100 }}
-                      >
-                        {course.description}{" "}
-                      </p>
-                      <div className="d-flex flex-row flex-nowrap gap-1 justify-content-between align-items-center">
-                        <div className="d-flex gap-2">
-                          <button className="btn btn-primary"> Go </button>
-                        </div>
-                        {isStudent && (
-                          <div className="d-flex gap-2">
-                            <button
-                              onClick={() => handleToggleEnrollment(course._id)}
-                              className={`btn ${
-                                isEnrolled ? "btn-danger" : "btn-success"
-                              }`}
-                            >
-                              {isEnrolled ? "Unenroll" : "Enroll"}
-                            </button>
-                          </div>
-                        )}
-                        {isFaculty && (
-                          <div className="d-flex gap-2">
-                            <button
-                              id="wd-edit-course-click"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                setCourse(course);
-                              }}
-                              className="btn btn-warning me-2 float-end"
-                            >
-                              Edit
-                            </button>{" "}
-                            <button
-                              onClick={(event) => {
-                                event.preventDefault();
-                                deleteCourse(course._id);
-                              }}
-                              className="btn btn-danger float-end"
-                              id="wd-delete-course-click"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
                   </Link>
+                  <div className="card-body">
+                    <h5 className="wd-dashboard-course-title card-title">
+                      {course.name}{" "}
+                    </h5>
+                    <p
+                      className="wd-dashboard-course-title card-text overflow-y-hidden"
+                      style={{ maxHeight: 100 }}
+                    >
+                      {course.description}{" "}
+                    </p>
+                    <div className="d-flex flex-row flex-nowrap gap-1 justify-content-between align-items-center">
+                      <div className="d-flex gap-2">
+                        <Link
+                          to={
+                            isEnrolled
+                              ? `/Kanbas/Courses/${course._id}/Home`
+                              : `/Kanbas/Dashboard/`
+                          }
+                          className="wd-dashboard-course-link text-decoration-none text-dark"
+                        >
+                          <button className="btn btn-primary"> Go </button>
+                        </Link>
+                      </div>
+                      {isStudent && (
+                        <div className="d-flex gap-2">
+                          <button
+                            onClick={() => handleToggleEnrollment(course._id)}
+                            className={`btn ${
+                              isEnrolled ? "btn-danger" : "btn-success"
+                            }`}
+                          >
+                            {isEnrolled ? "Unenroll" : "Enroll"}
+                          </button>
+                        </div>
+                      )}
+                      {isFaculty && (
+                        <div className="d-flex gap-2">
+                          <button
+                            id="wd-edit-course-click"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              setCourse(course);
+                            }}
+                            className="btn btn-warning me-2 float-end"
+                          >
+                            Edit
+                          </button>{" "}
+                          <button
+                            onClick={(event) => {
+                              event.preventDefault();
+                              deleteCourse(course._id);
+                            }}
+                            className="btn btn-danger float-end"
+                            id="wd-delete-course-click"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             );
