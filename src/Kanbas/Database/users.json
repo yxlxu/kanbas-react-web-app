@@ -42,8 +42,8 @@
 },
 {
   "_id": "456",
-  "username": "1",
-  "password": "123",
+  "username": "thor_odinson",
+  "password": "mjolnir123",
   "firstName": "Thor",
   "lastName": "Odinson",
   "email": "thor@asgard.com",
