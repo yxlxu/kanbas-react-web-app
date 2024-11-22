@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addAssignment, updateAssignment } from "./reducer";
+import * as assignmentsClient from "./client";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams();
@@ -24,13 +25,17 @@ export default function AssignmentEditor() {
     availableUntilDate: new Date().toISOString(),
   });
 
+  const fetchAssignment = async () => {
+    const existingAssignment = await assignmentsClient.fetchAssignmentById(aid as string);
+    if (existingAssignment) {
+      setAssignment(existingAssignment);
+    }
+  }
+
   useEffect(() => {
     if (aid !== "Editor") {
       // Edit mode: Load existing assignment data
-      const existingAssignment = assignments.find((a: any) => a._id === aid);
-      if (existingAssignment) {
-        setAssignment(existingAssignment);
-      }
+      fetchAssignment()
     }
   }, [aid, assignments]);
 
@@ -41,10 +46,12 @@ export default function AssignmentEditor() {
   };
 
   // Save the assignment (add or update)
-  const handleSave = () => {
+  const handleSave = async () => {
     if (aid !== "Editor") {
+      await assignmentsClient.updateAssignment(assignment);
       dispatch(updateAssignment(assignment));
     } else {
+      await assignmentsClient.createAssignment(assignment);
       dispatch(addAssignment(assignment));
     }
     console.log([...assignments, assignment])

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import img from "../../images/5610.jpg";
-import { toggleEnrollment } from "./reducer"; // Import enrollment actions
+import { setEnrollment } from "./reducer"; // Import enrollment actions
+import * as courseClient from "../Courses/client";
+import * as enrollmentClient from "./client";
 //citation: copied from https://stackoverflow.com/questions/20033712/html-img-src-wont-load-my-images
 
 export default function Dashboard({
@@ -12,6 +14,7 @@ export default function Dashboard({
   addNewCourse,
   deleteCourse,
   updateCourse,
+  onfetchCourses
 }: {
   courses: any[];
   course: any;
@@ -19,8 +22,10 @@ export default function Dashboard({
   addNewCourse: () => void;
   deleteCourse: (course: any) => void;
   updateCourse: () => void;
+  onfetchCourses: () => void;
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const [allCourses, setAllCourses] = useState<any[]>([]);
   const isStudent = currentUser?.role === "STUDENT";
   const isFaculty = currentUser?.role === "FACULTY";
 
@@ -30,33 +35,39 @@ export default function Dashboard({
 
   const [showAllCourses, setShowAllCourses] = useState(false);
 
-  const filteredCourses = courses;
-  // const filteredCourses = showAllCourses
-  //   ? courses
-  //   : courses.filter((course) =>
-  //       enrollments.some(
-  //         (enrollment: any) =>
-  //           enrollment.user === currentUser._id &&
-  //           enrollment.course === course._id
-  //       )
-  //     );
+  const fetchAllCourses = async () => {
+    const courses = await courseClient.fetchAllCourses();
+    setAllCourses(courses);
+  }
+
+  const fetchEnrollments = async () => {
+    try {
+      const response = await enrollmentClient.fetchEnrollments(currentUser._id);
+      dispatch(setEnrollment(response));
+    } catch (error) {
+      console.error("Failed to fetch enrollments:", error);
+    }
+  };
+
+  const filteredCourses = showAllCourses ? allCourses : courses;
 
   useEffect(() => {
-    // Load enrollments from localStorage on initial render
-    const savedEnrollments = localStorage.getItem("enrollments");
-    if (savedEnrollments) {
-      dispatch({
-        type: "enrollments/loadEnrollments",
-        payload: JSON.parse(savedEnrollments),
-      });
-    }
-  }, [dispatch]);
+    fetchAllCourses();
+    fetchEnrollments();
+  }, []);
 
-  const handleToggleEnrollment = (courseId: string) => {
-    dispatch(toggleEnrollment({ userId: currentUser._id, courseId }));
-    // Save updated enrollments to localStorage
-    const updatedEnrollments = enrollments.map((e: any) => e);
-    localStorage.setItem("enrollments", JSON.stringify(updatedEnrollments));
+  const handleToggleEnrollment = async (courseId: string) => {
+    try {
+      if (enrollments.some((e: any) => e.user === currentUser._id && e.course === courseId)) {
+        await enrollmentClient.unenrollFromCourse(currentUser._id, courseId);
+      } else {
+        await enrollmentClient.enrollInCourse(currentUser._id, courseId);
+      }
+      fetchEnrollments(); // Refresh enrollments
+      onfetchCourses();
+    } catch (error) {
+      console.error("Failed to toggle enrollment:", error);
+    }
   };
 
   return (
@@ -105,7 +116,7 @@ export default function Dashboard({
           <hr />
         </div>
       )}
-      <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2>{" "}
+      <h2 id="wd-dashboard-published">Published Courses ({filteredCourses.length})</h2>{" "}
       <hr />
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">

@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsGripVertical, BsTrash, BsNewspaper } from "react-icons/bs";
 import LessonControlButtons from "../Modules/LessonControlButtons";
 import AssignmentHeader from "./AssignmentHeader";
 import AssignmentControlButtons from "./AssignmentControlButtons";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { deleteAssignment } from "./reducer";
+import { setAssignments, deleteAssignment } from "./reducer";
 import { useSelector, useDispatch } from "react-redux";
+import * as assignmentsClient from "./client";
 
 export default function Assignments() {
   const { cid } = useParams();
@@ -29,14 +30,24 @@ export default function Assignments() {
     return time;
   };
 
-  const handleDelete = (assignmentId: string) => {
+  const handleDelete = async (assignmentId: string) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this assignment?"
     );
     if (confirmDelete) {
+      await assignmentsClient.deleteAssignment(assignmentId)
       dispatch(deleteAssignment(assignmentId));
     }
   };
+
+  const fetchAssignments = async () => {
+    const assignments = await assignmentsClient.fetchAssignmentsByCourse(cid as string);
+    dispatch(setAssignments(assignments));
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
 
   return (
     <div id="wd-assignments">
