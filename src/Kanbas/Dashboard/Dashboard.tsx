@@ -30,15 +30,16 @@ export default function Dashboard({
 
   const [showAllCourses, setShowAllCourses] = useState(false);
 
-  const filteredCourses = showAllCourses
-    ? courses
-    : courses.filter((course) =>
-        enrollments.some(
-          (enrollment: any) =>
-            enrollment.user === currentUser._id &&
-            enrollment.course === course._id
-        )
-      );
+  const filteredCourses = courses;
+  // const filteredCourses = showAllCourses
+  //   ? courses
+  //   : courses.filter((course) =>
+  //       enrollments.some(
+  //         (enrollment: any) =>
+  //           enrollment.user === currentUser._id &&
+  //           enrollment.course === course._id
+  //       )
+  //     );
 
   useEffect(() => {
     // Load enrollments from localStorage on initial render
