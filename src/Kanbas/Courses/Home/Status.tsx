@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 {/* Find more icons */}
 export default function CourseStatus() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const isFaculty = currentUser?.role === "FACULTY";
+  const isFaculty = currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
   
   return (
     <div>

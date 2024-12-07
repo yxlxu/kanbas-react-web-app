@@ -32,8 +32,9 @@ export default function Dashboard({
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const [allCourses, setAllCourses] = useState<any[]>([]);
-  const isStudent = currentUser?.role === "STUDENT";
-  const isFaculty = currentUser?.role === "FACULTY";
+  const [isStudent, setIsStudent] = useState(false);
+
+  const isFaculty = currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
 
   const { enrollments } = useSelector((state: any) => state.enrollmentReducer);
 
@@ -60,7 +61,10 @@ export default function Dashboard({
   useEffect(() => {
     fetchAllCourses();
     fetchEnrollments();
-  }, []);
+    if (currentUser?.role === "STUDENT") {
+      setIsStudent(true);
+    }
+  }, [currentUser]);
 
   const handleToggleEnrollment = async (courseId: string) => {
     try {
@@ -79,19 +83,21 @@ export default function Dashboard({
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">
-        Dashboard
-        <button onClick={() => setEnrolling(!enrolling)} className="float-end btn btn-primary" >
+        Dashboard{currentUser.role}
+        {isStudent && (
+          <button
+            className="btn btn-primary float-end mt-1"
+            // onClick={() => setShowAllCourses(!showAllCourses)}
+            onClick={() => setEnrolling(!enrolling)}
+          >
+            {showAllCourses ? "My Courses" : "All Courses"}
+          </button>
+        )}
+        {/* <button onClick={() => setEnrolling(!enrolling)} className="float-end btn btn-primary" >
           {enrolling ? "My Courses" : "All Courses"}
-        </button>
+        </button> */}
       </h1> <hr />
-      {isStudent && (
-        <button
-          className="btn btn-primary float-end mt-1"
-          onClick={() => setShowAllCourses(!showAllCourses)}
-        >
-          {showAllCourses ? "My Enrollments" : "All Courses"}
-        </button>
-      )}
+      
       {isFaculty && (
         <div>
           <h5>
@@ -137,6 +143,14 @@ export default function Dashboard({
                 enrollment.user === currentUser._id &&
                 enrollment.course === course._id
             );
+            const getLinkTo = () => {
+              if (isStudent) {
+                return isEnrolled
+                  ? `/Kanbas/Courses/${course._id}/Home`
+                  : `/Kanbas/Dashboard/`;
+              }
+              return `/Kanbas/Courses/${course._id}/Home`;
+            };
             return (
               <div
                 className="wd-dashboard-course col"
@@ -144,11 +158,7 @@ export default function Dashboard({
               >
                 <div className="card rounded-3 overflow-hidden">
                   <Link
-                    to={
-                      isEnrolled
-                        ? `/Kanbas/Courses/${course._id}/Home`
-                        : `/Kanbas/Dashboard/`
-                    }
+                    to={getLinkTo()}
                     className="wd-dashboard-course-link text-decoration-none text-dark"
                   >
                     <img src={img} width="100%" height={160} />
@@ -176,11 +186,7 @@ export default function Dashboard({
                     <div className="d-flex flex-row flex-nowrap gap-1 justify-content-between align-items-center">
                       <div className="d-flex gap-2">
                         <Link
-                          to={
-                            isEnrolled
-                              ? `/Kanbas/Courses/${course._id}/Home`
-                              : `/Kanbas/Dashboard/`
-                          }
+                          to={getLinkTo()}
                           className="wd-dashboard-course-link text-decoration-none text-dark"
                         >
                           <button className="btn btn-primary"> Go </button>

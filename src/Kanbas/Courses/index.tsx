@@ -15,13 +15,17 @@ export default function Courses({ courses }: { courses: any[] }) {
   const course = courses.find((course) => course._id === cid);
   const { pathname } = useLocation();
   const fetchUsers = async () => {
-    const users = await client.findUsersForCourse(cid || "");
-    setUsers(users);
+    try {
+      const users = await client.findUsersForCourse(cid || "");
+      setUsers(users);
+    } catch (error) {
+      console.log("find users for course failed: ", error, "for course", cid);
+    }
   };
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [cid]);
 
   return (
     <div id="wd-courses">
