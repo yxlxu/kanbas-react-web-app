@@ -18,6 +18,7 @@ export default function PeopleDetails() {
     await client.deleteUser(uid);
     navigate(-1);
   };
+
   const saveUser = async () => {
     const [firstName, lastName] = name.split(" ");
     const updatedUser = { ...user, firstName, lastName, email, role };
@@ -26,15 +27,30 @@ export default function PeopleDetails() {
     setEditing(false);
     navigate(-1);
   };
+
   const fetchUser = async () => {
     if (!uid) return;
-    const user = await client.findUserById(uid);
-    setUser(user);
+    try {
+      const fetchedUser = await client.findUserById(uid);
+      console.log(fetchedUser);
+      setUser(fetchedUser);
+      setName(fetchedUser.firstName+" "+fetchedUser.lastName);
+      setEmail(fetchedUser.email);
+      setRole(fetchedUser.role);
+      console.log(name);
+    } catch (error) {
+      console.error('error fetching user');
+    }
   };
+
   useEffect(() => {
-    if (uid) fetchUser();
+    if (uid) {
+      fetchUser();
+    }
   }, [uid]);
+
   if (!uid) return null;
+
   return (
     <div className="wd-people-details position-fixed top-0 end-0 bottom-0 bg-white p-4 shadow w-25">
       <button
@@ -63,8 +79,7 @@ export default function PeopleDetails() {
         )}
         {!editing && (
           <div className="wd-name" onClick={() => setEditing(true)}>
-            {" "}
-            {user.firstName} {user.lastName}{" "}
+            {user.firstName}{" "}{user.lastName}
           </div>
         )}
         {user && editing && (
@@ -81,8 +96,7 @@ export default function PeopleDetails() {
         )}
         {!editing && (
           <div className="wd-name" onClick={() => setEditing(true)}>
-            {" "}
-            {user.email}{" "}
+            {user.email}
           </div>
         )}
         {user && editing && (
@@ -99,8 +113,7 @@ export default function PeopleDetails() {
         )}
         {!editing && (
           <div className="wd-name" onClick={() => setEditing(true)}>
-            {" "}
-            {user.role} {" "}
+            {user.role}
           </div>
         )}
         {user && editing && (
