@@ -31,71 +31,41 @@ export default function Dashboard({
   updateEnrollment: (courseId: string, enrolled: boolean) => void 
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const [allCourses, setAllCourses] = useState<any[]>([]);
   const [isStudent, setIsStudent] = useState(false);
 
   const isFaculty = currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
 
-  const { enrollments } = useSelector((state: any) => state.enrollmentReducer);
+  // const { enrollments } = useSelector((state: any) => state.enrollmentReducer);
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  const [showAllCourses, setShowAllCourses] = useState(false);
-
-  const fetchAllCourses = async () => {
-    const courses = await courseClient.fetchAllCourses();
-    setAllCourses(courses);
-  }
-
-  const fetchEnrollments = async () => {
-    try {
-      const response = await enrollmentClient.fetchEnrollments(currentUser._id);
-      dispatch(setEnrollment(response));
-    } catch (error) {
-      console.error("Failed to fetch enrollments:", error);
-    }
-  };
-
-  const filteredCourses = showAllCourses ? allCourses : courses;
+  // const fetchEnrollments = async () => {
+  //   try {
+  //     const response = await enrollmentClient.fetchEnrollments(currentUser._id);
+  //     console.log(response);
+  //     dispatch(setEnrollment(response));
+  //   } catch (error) {
+  //     console.error("Failed to fetch enrollments:", error);
+  //   }
+  // };
 
   useEffect(() => {
-    fetchAllCourses();
-    fetchEnrollments();
+    // fetchEnrollments();
     if (currentUser?.role === "STUDENT") {
       setIsStudent(true);
     }
   }, [currentUser]);
 
-  const handleToggleEnrollment = async (courseId: string) => {
-    try {
-      if (enrollments.some((e: any) => e.user === currentUser._id && e.course === courseId)) {
-        await enrollmentClient.unenrollFromCourse(currentUser._id, courseId);
-      } else {
-        await enrollmentClient.enrollInCourse(currentUser._id, courseId);
-      }
-      fetchEnrollments(); // Refresh enrollments
-      onfetchCourses();
-    } catch (error) {
-      console.error("Failed to toggle enrollment:", error);
-    }
-  };
-
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">
-        Dashboard{currentUser.role}
-        {isStudent && (
-          <button
-            className="btn btn-primary float-end mt-1"
-            // onClick={() => setShowAllCourses(!showAllCourses)}
-            onClick={() => setEnrolling(!enrolling)}
-          >
-            {showAllCourses ? "My Courses" : "All Courses"}
-          </button>
-        )}
-        {/* <button onClick={() => setEnrolling(!enrolling)} className="float-end btn btn-primary" >
+        Dashboard
+        <button
+          className="btn btn-primary float-end mt-1"
+          onClick={() => setEnrolling(!enrolling)}
+        >
           {enrolling ? "My Courses" : "All Courses"}
-        </button> */}
+        </button>
       </h1> <hr />
       
       {isFaculty && (
@@ -133,19 +103,19 @@ export default function Dashboard({
           <hr />
         </div>
       )}
-      <h2 id="wd-dashboard-published">Published Courses ({filteredCourses.length})</h2>{" "}
+      <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2>{" "}
       <hr />
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
-          {filteredCourses.map((course) => {
-            const isEnrolled = enrollments.some(
-              (enrollment: any) =>
-                enrollment.user === currentUser._id &&
-                enrollment.course === course._id
-            );
+          {courses.map((course) => {
+            // const isEnrolled = enrollments.some(
+            //   (enrollment: any) =>
+            //     enrollment.user === currentUser._id &&
+            //     enrollment.course === course._id
+            // );
             const getLinkTo = () => {
               if (isStudent) {
-                return isEnrolled
+                return course.enrolled
                   ? `/Kanbas/Courses/${course._id}/Home`
                   : `/Kanbas/Dashboard/`;
               }
@@ -192,18 +162,6 @@ export default function Dashboard({
                           <button className="btn btn-primary"> Go </button>
                         </Link>
                       </div>
-                      {isStudent && (
-                        <div className="d-flex gap-2">
-                          <button
-                            onClick={() => handleToggleEnrollment(course._id)}
-                            className={`btn ${
-                              isEnrolled ? "btn-danger" : "btn-success"
-                            }`}
-                          >
-                            {isEnrolled ? "Unenroll" : "Enroll"}
-                          </button>
-                        </div>
-                      )}
                       {isFaculty && (
                         <div className="d-flex gap-2">
                           <button

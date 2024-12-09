@@ -12,7 +12,6 @@ import * as assignmentsClient from "./client";
 export default function Assignments() {
   const { cid } = useParams();
   const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
-  console.log(assignments);
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const isFaculty = currentUser?.role === "FACULTY";
@@ -80,7 +79,7 @@ export default function Assignments() {
                     to={`/Kanbas/Courses/${cid}/Assignments/${assignment._id}`}
                   >
                     <h5>
-                      {assignment._id} - {assignment.title}
+                      {assignment.title}
                     </h5>
                   </Link>
                   <h6>

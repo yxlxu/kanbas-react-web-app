@@ -18,33 +18,18 @@ export default function Kanbas() {
   const findCoursesForUser = async () => {
     try {
       const courses = await userClient.findCoursesForUser(currentUser._id);
+      console.log(courses)
       setCourses(courses);
     } catch (error) {
       console.error(error);
     }
   };
-  const updateEnrollment = async (courseId: string, enrolled: boolean) => {
-    if (enrolled) {
-      await userClient.enrollIntoCourse(currentUser._id, courseId);
-    } else {
-      await userClient.unenrollFromCourse(currentUser._id, courseId);
-    }
-    setCourses(
-      courses.map((course) => {
-        if (course._id === courseId) {
-          return { ...course, enrolled: enrolled };
-        } else {
-          return course;
-        }
-      })
-    );
-  }; 
+
   const fetchCourses = async () => {
     try {
       const allCourses = await courseClient.fetchAllCourses();
-      const enrolledCourses = await userClient.findCoursesForUser(
-        currentUser._id
-      );
+      const enrolledCourses = await userClient.findCoursesForUser(currentUser._id);
+
       const courses = allCourses.map((course: any) => {
         if (enrolledCourses.find((c: any) => c._id === course._id)) {
           return { ...course, enrolled: true };
@@ -58,12 +43,32 @@ export default function Kanbas() {
     }
   };
 
+  const updateEnrollment = async (courseId: string, enrolled: boolean) => {
+    if (enrolled) {
+      await userClient.enrollIntoCourse(currentUser._id, courseId);
+    } else {
+      console.log("unenroll");
+      await userClient.unenrollFromCourse(currentUser._id, courseId);
+    }
+    setCourses(
+      courses.map((course) => {
+        if (course._id === courseId) {
+          return { ...course, enrolled: enrolled };
+        } else {
+          return course;
+        }
+      })
+    ); 
+  }
+
   useEffect(() => {
-   if (enrolling) {
-     fetchCourses();
-   } else {
-     findCoursesForUser();
-   }
+    if (enrolling) {
+      console.log("show all courses")
+      fetchCourses();
+    } else {
+      console.log("show my courses")
+      findCoursesForUser();
+  }
  }, [currentUser, enrolling]);
 
   const [course, setCourse] = useState<any>({

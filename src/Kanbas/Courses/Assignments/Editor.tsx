@@ -28,7 +28,7 @@ export default function AssignmentEditor() {
   const fetchAssignment = async () => {
     const existingAssignment = await assignmentsClient.fetchAssignmentById(aid as string);
     if (existingAssignment) {
-      setAssignment(existingAssignment);
+      setAssignment(existingAssignment[0]);
     }
   }
 
