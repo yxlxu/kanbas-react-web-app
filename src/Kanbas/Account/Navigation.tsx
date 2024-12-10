@@ -8,7 +8,6 @@ export default function AccountNavigation() {
   const active = (path: string) => (pathname.includes(path) ? "active" : "");
   const { pathname } = useLocation();
   useEffect(() => {
-    console.log("Current User in Navigation:", JSON.stringify(currentUser, null, 2));
     console.log("Current User Role:", currentUser?.role);
   }, [currentUser]);
   return (

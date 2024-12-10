@@ -18,8 +18,7 @@ export default function Kanbas() {
   const findCoursesForUser = async () => {
     try {
       const courses = await userClient.findCoursesForUser(currentUser._id);
-      console.log(courses)
-      setCourses(courses);
+      setCourses(courses.map((course: any) => ({ ...course, enrolled: true })));
     } catch (error) {
       console.error(error);
     }
