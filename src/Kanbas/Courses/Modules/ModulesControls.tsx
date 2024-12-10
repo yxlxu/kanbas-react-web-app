@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 export default function ModulesControls({ moduleName, setModuleName, addModule }:
   { moduleName: string; setModuleName: (title: string) => void; addModule: () => void; }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const isFaculty = currentUser?.role === "FACULTY";
+  const isFaculty = currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
   
   return (
     <div id="wd-modules-controls" className="text-nowrap">

@@ -46,7 +46,7 @@ export default function Modules() {
   }, []);
   
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const isFaculty = currentUser?.role === "FACULTY";
+  const isFaculty = currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
   
   return (
     <div style={{ width: "95%" }}>

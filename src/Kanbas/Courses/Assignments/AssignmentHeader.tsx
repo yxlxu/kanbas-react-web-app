@@ -6,7 +6,7 @@ export default function AssignmentHeader({ courseId }: {
   courseId: string; } ) {
   const navigate = useNavigate();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const isFaculty = currentUser?.role === "FACULTY";
+  const isFaculty = currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
   
   return (
     <div className="d-inline float-end d-inline-flex">

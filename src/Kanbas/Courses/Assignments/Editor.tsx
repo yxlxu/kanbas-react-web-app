@@ -10,7 +10,7 @@ export default function AssignmentEditor() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const isFaculty = currentUser?.role === "FACULTY";
+  const isFaculty = currentUser?.role === "FACULTY" || currentUser?.role === "ADMIN";
 
   const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
 
