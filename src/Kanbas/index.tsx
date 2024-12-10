@@ -72,11 +72,10 @@ export default function Kanbas() {
  }, [currentUser, enrolling]);
 
   const [course, setCourse] = useState<any>({
-    _id: "0",
     name: "New Course",
-    number: "New Number",
-    startDate: "2023-09-10",
-    endDate: "2023-12-15",
+    // number: "New Number",
+    // startDate: "2023-09-10",
+    // endDate: "2023-12-15",
     image: "/images/reactjs.jpg",
     description: "New Description",
   });
